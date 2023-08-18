@@ -42,6 +42,63 @@ namespace WorkScheduleValidator.Helpers
             return (numberOfMinutes <= maxNumberOfHours * 60, (totalWorkingHours, totalWorkingMinutes), maxNumberOfHours, numberOfWorkingDaysInMonth);
         }
 
+        public bool IsWorkPlannedForSunday()
+        {
+            var sundays = _schedule.GetDaysByCondition(delegate (DateTime date)
+            {
+                return date.DayOfWeek == DayOfWeek.Sunday;
+            });
+
+            foreach (var day in sundays)
+            {
+                var element = _schedule.HoursPerDay[day];
+
+                if (GetTimeDifference(element.startTime, element.endTime) != 0)
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        public (int totalOvertimeHours, int totalOvertimeMinutes) CalculateOvertime()
+        {
+            int numberOfOvertimeMinutes = 0;
+
+            var sundays = _schedule.GetDaysByCondition(delegate (DateTime date)
+            {
+                return date.DayOfWeek == DayOfWeek.Sunday;
+            });
+
+            foreach (var day in sundays)
+            {
+                var element = _schedule.HoursPerDay[day];
+
+                numberOfOvertimeMinutes += GetTimeDifference(element.startTime, element.endTime);                
+            }
+
+            var otherDays = _schedule.HoursPerDay.Where(x => !sundays.Contains(x.Key)).Select(x => x.Key);
+
+            foreach (var day in otherDays)
+            {
+                var element = _schedule.HoursPerDay[day];
+
+                var diff = GetTimeDifference(element.startTime, element.endTime);
+
+                if (diff > 8 * 60)
+                {
+                    numberOfOvertimeMinutes += diff - (8 * 60);
+                }
+            }
+
+            int totalOvertimeHours = numberOfOvertimeMinutes / 60;
+            int totalOvertimeMinutes = numberOfOvertimeMinutes - (totalOvertimeHours * 60);
+
+            return (totalOvertimeHours, totalOvertimeMinutes);
+
+        }
+
         private int GetTimeDifference(TimeOnly startTime, TimeOnly endTime)
         {
             return (int)(endTime - startTime).TotalMinutes;

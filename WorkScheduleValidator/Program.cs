@@ -18,6 +18,18 @@ try
         + "\nnumber of working days: " + validation1.numberOfWorkingDaysInMonth + "\nworking time: " + 
         validation1.totalTime.totalWorkingHours + "h " + validation1.totalTime.totalWorkingMinutes + "m" + "\nmax limit of working time: " + validation1.maxLimitOfWorkingHours + "h");
 
+    Console.Write("\n\n");
+
+    var validation2 = scheduleValidator.IsWorkPlannedForSunday();
+
+    Console.Write("################2###############\nIs work planned on any Sunday: " + validation2);
+    Console.Write("\n\n");
+
+    var validation3 = scheduleValidator.CalculateOvertime();
+
+    Console.Write("################3###############\nTotal overtime: " + validation3.totalOvertimeHours + "h " + validation3.totalOvertimeMinutes + "m");
+
+
 }
 catch (ScheduleFormatException ex)
 {
