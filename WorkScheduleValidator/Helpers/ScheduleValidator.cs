@@ -16,7 +16,7 @@ namespace WorkScheduleValidator.Helpers
             _schedule = schedule;
         }
 
-        public (bool isValid, double numberOfWorkingHours, double maxNumberOfWorkingHours, int numberOfWorkingDaysInMonth) ValidateNumberOfWorkingHours()
+        public (bool isValid, (int totalWorkingHours, int totalWorkingMinutes) totalTime, int maxLimitOfWorkingHours, int numberOfWorkingDaysInMonth) ValidateNumberOfWorkingHours()
         {
             var workingDays = _schedule.GetDaysByCondition(delegate (DateTime date)
             {
@@ -25,15 +25,26 @@ namespace WorkScheduleValidator.Helpers
 
             int numberOfWorkingDaysInMonth = workingDays.Count;
 
-            double numberOfWorkingHours = 0;
+            int numberOfMinutes = 0;
+
             foreach (var day in workingDays)
             {
-                numberOfWorkingHours += _schedule.HoursPerDay[day];
+                var element = _schedule.HoursPerDay[day];
+
+                numberOfMinutes += GetTimeDifference(element.startTime, element.endTime);
             }
 
-            double maxNumberOfWorkingHours = 8 * numberOfWorkingDaysInMonth;
+            int maxNumberOfHours = 8 * numberOfWorkingDaysInMonth;
 
-            return (numberOfWorkingHours <= maxNumberOfWorkingHours, numberOfWorkingHours, maxNumberOfWorkingHours, numberOfWorkingDaysInMonth);
+            int totalWorkingHours = numberOfMinutes / 60;
+            int totalWorkingMinutes = numberOfMinutes - (totalWorkingHours * 60);
+
+            return (numberOfMinutes <= maxNumberOfHours * 60, (totalWorkingHours, totalWorkingMinutes), maxNumberOfHours, numberOfWorkingDaysInMonth);
+        }
+
+        private int GetTimeDifference(TimeOnly startTime, TimeOnly endTime)
+        {
+            return (int)(endTime - startTime).TotalMinutes;
         }
     }
 }

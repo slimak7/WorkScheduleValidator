@@ -15,8 +15,8 @@ try
     var validation1 = scheduleValidator.ValidateNumberOfWorkingHours();
 
     Console.Write("################1###############\nis valid: " + validation1.isValid 
-        + "\nnumber of working days: " + validation1.numberOfWorkingDaysInMonth + "\nnumber of hours: " + 
-        validation1.numberOfWorkingHours + "\nmax limit of working hours: " + validation1.maxNumberOfWorkingHours);
+        + "\nnumber of working days: " + validation1.numberOfWorkingDaysInMonth + "\nworking time: " + 
+        validation1.totalTime.totalWorkingHours + "h " + validation1.totalTime.totalWorkingMinutes + "m" + "\nmax limit of working time: " + validation1.maxLimitOfWorkingHours + "h");
 
 }
 catch (ScheduleFormatException ex)

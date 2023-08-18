@@ -46,28 +46,38 @@ namespace WorkScheduleValidator.Helpers
 
                     var parts = line.Split(",");
 
-                    if (parts.Length > 2) 
+                    if (parts.Length != 2) 
                     {
-                        throw new ScheduleFormatException("Can not determine parts indicating day and hours");
+                        throw new ScheduleFormatException("Can not determine parts indicating day and working time");
                     }
 
-                    int day, hours;
-
+                    int day;
+                    
                     success = int.TryParse(parts[0], out day);
 
                     if (!success) 
                     {
                         throw new ScheduleFormatException("Can not read day number");
                     }
-                    
-                    success = int.TryParse(parts[1], out hours);
 
-                    if (!success)
+                    TimeOnly startTime, endTime;
+
+                    if (parts[1].Replace(" ", "") == "")
                     {
-                        throw new ScheduleFormatException("Can not read hours");
+                        endTime = startTime = new TimeOnly();
                     }
+                    else
+                    {
+                        var startEndTime = parts[1].Split("-");
+                        if (startEndTime.Length != 2)
+                        {
+                            throw new ScheduleFormatException("Can not determine parts indicating working time");
+                        }
 
-                    schedule.HoursPerDay.Add(day, hours);
+                        startTime = TimeOnly.Parse(startEndTime[0]);
+                        endTime = TimeOnly.Parse(startEndTime[1]);
+                    }
+                    schedule.HoursPerDay.Add(day, (startTime, endTime));
 
                 }
                 

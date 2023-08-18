@@ -8,28 +8,28 @@ namespace WorkScheduleValidator.Model
 {
     public class Schedule
     {
-        private readonly DateTime _date;
+        private readonly DateTime _monthYear;
         public string GetMonthName 
         { 
             get 
             {
-                return _date.ToString("MMMM");
+                return _monthYear.ToString("MMMM");
             }
         }
-
-        public Dictionary<int, double> HoursPerDay { get; set; }
+        
+        public Dictionary<int, (TimeOnly startTime, TimeOnly endTime)> HoursPerDay { get; set; }
 
         public Schedule(int month, int year)
         {
-            _date = new DateTime(year, month, 1);
-            HoursPerDay = new Dictionary<int, double>();
+            _monthYear = new DateTime(year, month, 1);
+            HoursPerDay = new Dictionary<int, (TimeOnly startTime, TimeOnly endTime)>();
         }
 
         public List<int> GetDaysByCondition(Func<DateTime, bool> condition)
         {
             List<int> days = new List<int>();
 
-            foreach (var day in GetDaysInMonth(_date.Year, _date.Month))
+            foreach (var day in GetDaysInMonth(_monthYear.Year, _monthYear.Month))
             {
                 if (condition(day))
                 {
