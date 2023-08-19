@@ -10,11 +10,12 @@ namespace WorkScheduleValidator.Helpers
 {
     public class ScheduleLoader
     {
-        private const string _directory = "./";
-        private string _fileName;
-        public ScheduleLoader(string fileName)
+        private readonly string _directory;
+        private readonly string _fileName;
+        public ScheduleLoader(string fileName, string directory = "./")
         {
             _fileName = fileName;
+            _directory = directory;
         }
 
         public Schedule GetSchedule()
@@ -28,14 +29,14 @@ namespace WorkScheduleValidator.Helpers
 
                 if (!success)
                 {
-                    throw new ScheduleFormatException("Can not read the year");
+                    throw new ScheduleFormatException("Year entry is missing.");
                 }
-
+                
                 success = int.TryParse(file.ReadLine(), out month);
 
                 if (!success)
                 {
-                    throw new ScheduleFormatException("Can not read the month");
+                    throw new ScheduleFormatException("Month entry is missing.");
                 }
 
                 Schedule schedule = new Schedule(month, year);
@@ -59,8 +60,6 @@ namespace WorkScheduleValidator.Helpers
                     {
                         throw new ScheduleFormatException("Can not read day number");
                     }
-
-                    TimeOnly startTime, endTime;
 
                     if (parts[1].Replace(" ", "") != "")
                     {

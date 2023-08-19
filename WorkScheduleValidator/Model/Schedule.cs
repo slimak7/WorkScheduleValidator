@@ -4,6 +4,7 @@ using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using WorkScheduleValidator.Exceptions;
 
 namespace WorkScheduleValidator.Model
 {
@@ -23,7 +24,21 @@ namespace WorkScheduleValidator.Model
 
         public Schedule(int month, int year, bool autoFillDefaultData = false)
         {
-            _monthYear = new DateTime(year, month, 1);
+            if (month < 1 || month > 12)
+            {
+                throw new ScheduleArgumentException($"Month number({month})is out of range.");
+            }
+
+            try
+            {
+                _monthYear = new DateTime(year, month, 1);
+
+            }
+            catch(ArgumentOutOfRangeException ex)
+            {
+                throw new ScheduleArgumentException($"Provided year({year}) is out of range.");
+            }
+
             HoursPerDay = new Dictionary<int, TimePeriod>();
 
             if (autoFillDefaultData )

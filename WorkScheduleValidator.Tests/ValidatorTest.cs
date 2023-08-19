@@ -3,7 +3,7 @@ using WorkScheduleValidator.Model;
 
 namespace WorkScheduleValidator.Tests
 {
-    public class UnitTest1
+    public class ValidatorTest
     {
         
         [Fact()]
