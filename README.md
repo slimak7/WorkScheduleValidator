@@ -11,7 +11,7 @@ Assumptions to schedule file format:
 year
 month
 day, time range in format HH:mm - HH:mm
-for example:
+for example:<br />
 2023<br />
 8<br />
 1, 8:00 - 16:00<br />
