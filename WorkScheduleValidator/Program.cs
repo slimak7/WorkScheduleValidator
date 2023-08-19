@@ -28,6 +28,10 @@ try
     var validation3 = scheduleValidator.CalculateOvertime();
 
     Console.Write("################3###############\nTotal overtime: " + validation3.totalOvertimeHours + "h " + validation3.totalOvertimeMinutes + "m");
+    Console.Write("\n\n");
+
+    var validation4 = scheduleValidator.Is11HoursBreak();
+    Console.Write("################4###############\nIs min 11 hours break between two following days: " + validation4);
 
 
 }

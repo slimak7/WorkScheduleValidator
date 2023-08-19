@@ -62,11 +62,7 @@ namespace WorkScheduleValidator.Helpers
 
                     TimeOnly startTime, endTime;
 
-                    if (parts[1].Replace(" ", "") == "")
-                    {
-                        endTime = startTime = new TimeOnly();
-                    }
-                    else
+                    if (parts[1].Replace(" ", "") != "")
                     {
                         var startEndTime = parts[1].Split("-");
                         if (startEndTime.Length != 2)
@@ -74,10 +70,9 @@ namespace WorkScheduleValidator.Helpers
                             throw new ScheduleFormatException("Can not determine parts indicating working time");
                         }
 
-                        startTime = TimeOnly.Parse(startEndTime[0]);
-                        endTime = TimeOnly.Parse(startEndTime[1]);
+
+                        schedule.HoursPerDay.Add(day, new TimePeriod(startEndTime[0], startEndTime[1]));
                     }
-                    schedule.HoursPerDay.Add(day, (startTime, endTime));
 
                 }
                 

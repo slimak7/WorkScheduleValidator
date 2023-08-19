@@ -19,12 +19,25 @@ namespace WorkScheduleValidator.Model
             }
         }
         
-        public Dictionary<int, (TimeOnly startTime, TimeOnly endTime)> HoursPerDay { get; set; }
+        public Dictionary<int, TimePeriod> HoursPerDay { get; set; }
 
-        public Schedule(int month, int year)
+        public Schedule(int month, int year, bool autoFillDefaultData = false)
         {
             _monthYear = new DateTime(year, month, 1);
-            HoursPerDay = new Dictionary<int, (TimeOnly startTime, TimeOnly endTime)>();
+            HoursPerDay = new Dictionary<int, TimePeriod>();
+
+            if (autoFillDefaultData )
+            {
+                int daysInMonth = DateTime.DaysInMonth(year, month);
+
+                for (int i = 1; i <= daysInMonth; i++)
+                {
+                    if (new DateOnly(year, month, i).DayOfWeek != (DayOfWeek.Saturday & DayOfWeek.Sunday))
+                    {
+                        HoursPerDay.Add(i, new TimePeriod("8:00", "16:00"));
+                    }
+                }
+            }
         }
 
         public List<int> GetDaysByCondition(Func<DateTime, bool> condition)

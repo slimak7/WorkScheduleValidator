@@ -31,7 +31,7 @@ namespace WorkScheduleValidator.Helpers
             {
                 var element = _schedule.HoursPerDay[day];
 
-                numberOfMinutes += GetTimeDifference(element.startTime, element.endTime);
+                numberOfMinutes += GetTimeDifference(element.StartTime, element.EndTime);
             }
 
             int maxNumberOfHours = 8 * numberOfWorkingDaysInMonth;
@@ -51,9 +51,11 @@ namespace WorkScheduleValidator.Helpers
 
             foreach (var day in sundays)
             {
-                var element = _schedule.HoursPerDay[day];
 
-                if (GetTimeDifference(element.startTime, element.endTime) != 0)
+                TimePeriod value;
+                bool success = _schedule.HoursPerDay.TryGetValue(day, out value);
+
+                if (success && GetTimeDifference(value.StartTime, value.EndTime) != 0)
                 {
                     return true;
                 }
@@ -73,22 +75,30 @@ namespace WorkScheduleValidator.Helpers
 
             foreach (var day in sundays)
             {
-                var element = _schedule.HoursPerDay[day];
+                TimePeriod value;
+                var success = _schedule.HoursPerDay.TryGetValue(day, out value);
 
-                numberOfOvertimeMinutes += GetTimeDifference(element.startTime, element.endTime);                
+                if (success)
+                {
+                    numberOfOvertimeMinutes += GetTimeDifference(value.StartTime, value.EndTime);
+                }
             }
 
             var otherDays = _schedule.HoursPerDay.Where(x => !sundays.Contains(x.Key)).Select(x => x.Key);
 
             foreach (var day in otherDays)
             {
-                var element = _schedule.HoursPerDay[day];
+                TimePeriod value;
+                var success = _schedule.HoursPerDay.TryGetValue(day, out value);
 
-                var diff = GetTimeDifference(element.startTime, element.endTime);
-
-                if (diff > 8 * 60)
+                if (success)
                 {
-                    numberOfOvertimeMinutes += diff - (8 * 60);
+                    var diff = GetTimeDifference(value.StartTime, value.EndTime);
+
+                    if (diff > 8 * 60)
+                    {
+                        numberOfOvertimeMinutes += diff - (8 * 60);
+                    }
                 }
             }
 
@@ -97,6 +107,35 @@ namespace WorkScheduleValidator.Helpers
 
             return (totalOvertimeHours, totalOvertimeMinutes);
 
+        }
+
+        public bool Is11HoursBreak()
+        {
+            for (int i = 1; i < _schedule.HoursPerDay.Count - 1; i++)
+            {
+                TimePeriod day, nextDay;
+
+                var success = _schedule.HoursPerDay.TryGetValue(i, out day);
+
+                if (!success)
+                {
+                    continue;
+                }
+
+                success = _schedule.HoursPerDay.TryGetValue(i + 1, out nextDay);
+
+                if (!success)
+                {
+                    continue;
+                }
+
+                if ((GetTimeDifference(day.EndTime, new TimeOnly().AddHours(24)) + 
+                    GetTimeDifference(new TimeOnly(), nextDay.StartTime)) < 11 * 60) 
+                { 
+                    return false; 
+                }
+            }
+            return true;
         }
 
         private int GetTimeDifference(TimeOnly startTime, TimeOnly endTime)
