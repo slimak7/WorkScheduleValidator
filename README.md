@@ -12,11 +12,11 @@ year
 month
 day, time range in format HH:mm - HH:mm
 for example:
-2023\n
-8\n
-1, 8:00 - 16:00\n
-2, 8:00 - 16:00\n
-3, 8:00 - 16:00\n
+2023<br />
+8<br />
+1, 8:00 - 16:00<br />
+2, 8:00 - 16:00<br />
+3, 8:00 - 16:00<br />
 ...
 
 
